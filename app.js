@@ -6,7 +6,8 @@ const fs = require('fs');
 
 const checkCommand = command =>{
     if(
-        command.trim() === "CONSULTAR" || 
+        command.trim() === "CONSULTAR" ||
+        command.trim() === "SALIR" || 
         command.trim().split(" ")[0] === "DEPOSITAR" || 
         command.trim().split(" ")[0] === "RETIRAR"
     )
@@ -34,8 +35,10 @@ io.on('connection', socket => {
                 console.log("CLIENT DATA:");
                 console.log(client);
                 io.emit('client_data', client);
-            }
-            if(data.trim().split(" ")[0] === "DEPOSITAR"){
+            }else if(data.trim() === "SALIR"){
+                io.emit('disconnect_message', "Connection ended!");
+                socket.disconnect(true)
+            }else if(data.trim().split(" ")[0] === "DEPOSITAR"){
                 // console.log(data.trim().split(" ")[0])
                 // console.log(data.trim().split(" ")[1])
                 let rawdata = fs.readFileSync('client.json');
@@ -59,8 +62,7 @@ io.on('connection', socket => {
                         io.emit('balance_data', {old: balance, new: new_balance});
                     }
                 });
-            }
-            if(data.trim().split(" ")[0] === "RETIRAR"){
+            }else if(data.trim().split(" ")[0] === "RETIRAR"){
                 let rawdata = fs.readFileSync('client.json');
                 let client = JSON.parse(rawdata);
 
