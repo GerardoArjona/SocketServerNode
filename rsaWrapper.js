@@ -10,8 +10,10 @@ rsaWrapper.generate = (direction) => {
     // 65537 — largo de la llave
     key.generateKeyPair(2048, 65537);
     // Salvar llaves como archivos pem en pkcs8
-    fs.writeFileSync(path.resolve(__dirname, 'keys', direction + '.private.pem'), key.exportKey('pkcs8-private-pem'));
-    fs.writeFileSync(path.resolve(__dirname, 'keys', direction + '.public.pem'), key.exportKey('pkcs8-public-pem'));
+    fs.writeFileSync(path.resolve(__dirname, 'keys', direction + '.private.pem'), 
+        key.exportKey('pkcs8-private-pem'));
+    fs.writeFileSync(path.resolve(__dirname, 'keys', direction + '.public.pem'), 
+        key.exportKey('pkcs8-public-pem'));
     return true;
 };
 
