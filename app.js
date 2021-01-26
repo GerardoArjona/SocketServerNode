@@ -3,6 +3,7 @@ const app = require('express')();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const fs = require('fs');
+const rsaWrapper = require('./rsaWrapper');
 
 const checkCommand = command =>{
     if(
@@ -14,6 +15,9 @@ const checkCommand = command =>{
         return true
     return false
 }
+
+rsaWrapper.initLoadServerKeys(__dirname);
+rsaWrapper.serverExampleEncrypt();
 
 app.get('/', (req, res) => {
   res.send('<h1>Server running</h1>');
@@ -34,7 +38,12 @@ io.on('connection', socket => {
                 let client = JSON.parse(rawdata);
                 console.log("CLIENT DATA:");
                 console.log(client);
-                io.emit('client_data', client);
+                let clientPublic = fs.readFileSync('keys/client.public.pem');
+                // console.log(clientPublic)
+                let message = rsaWrapper.encrypt(clientPublic, JSON.stringify(client));
+                // console.log(message)
+                io.emit('client_data', message);
+                   
             }else if(data.trim() === "SALIR"){
                 io.emit('disconnect_message', "Connection ended!");
                 socket.disconnect(true)
@@ -58,8 +67,15 @@ io.on('connection', socket => {
                         client = JSON.parse(rawdata);
         
                         let new_balance = client.balance
-        
-                        io.emit('balance_data', {old: balance, new: new_balance});
+
+                        let balanceData = {old: balance, new: new_balance}
+
+                        let clientPublic = fs.readFileSync('keys/client.public.pem');
+                        // console.log(clientPublic)
+                        let message = rsaWrapper.encrypt(clientPublic, JSON.stringify(balanceData));
+                        // console.log(message)
+
+                        io.emit('balance_data', message);
                     }
                 });
             }else if(data.trim().split(" ")[0] === "RETIRAR"){
@@ -80,8 +96,15 @@ io.on('connection', socket => {
                         client = JSON.parse(rawdata);
         
                         let new_balance = client.balance
+
+                        let balanceData = {old: balance, new: new_balance}
+
+                        let clientPublic = fs.readFileSync('keys/client.public.pem');
+                        // console.log(clientPublic)
+                        let message = rsaWrapper.encrypt(clientPublic, JSON.stringify(balanceData));
+                        // console.log(message)
         
-                        io.emit('balance_data', {old: balance, new: new_balance});
+                        io.emit('balance_data', message);
                     }
                 });
             }
