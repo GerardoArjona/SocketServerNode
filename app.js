@@ -30,6 +30,8 @@ io.on('connection', socket => {
     })
     
     socket.on('command', data =>{
+        let serverPrivate = fs.readFileSync('keys/server.private.pem');
+        data = rsaWrapper.decrypt(serverPrivate, data);
         console.log("COMMAND: " + data)
         if(checkCommand(data)){
             io.emit('command_received', `Received`);
