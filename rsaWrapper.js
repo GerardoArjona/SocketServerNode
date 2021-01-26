@@ -4,17 +4,18 @@ const fs = require('fs');
 const NodeRSA = require('node-rsa');
 const crypto = require('crypto');
 
+// Generar las llaves necesarias
 rsaWrapper.generate = (direction) => {
     let key = new NodeRSA();
-    // 2048 — key length, 65537 open exponent
+    // 65537 — largo de la llave
     key.generateKeyPair(2048, 65537);
-    //save keys as pem line in pkcs8
+    // Salvar llaves como archivos pem en pkcs8
     fs.writeFileSync(path.resolve(__dirname, 'keys', direction + '.private.pem'), key.exportKey('pkcs8-private-pem'));
     fs.writeFileSync(path.resolve(__dirname, 'keys', direction + '.public.pem'), key.exportKey('pkcs8-public-pem'));
     return true;
 };
 
-// encrypting RSA, using padding OAEP, with nodejs crypto:
+// Cifrando RSA usando padding OAEP con Crypto de NodeJs
 rsaWrapper.encrypt = (publicKey, message) => {
     //console.log(publicKey)
     let enc = crypto.publicEncrypt({
@@ -24,7 +25,7 @@ rsaWrapper.encrypt = (publicKey, message) => {
     return enc.toString('base64');
 };
 
-// descrypting RSA, using padding OAEP, with nodejs crypto:
+// Descifrando RSA usando padding OAEP con Crypto de NodeJs:
 rsaWrapper.decrypt = (privateKey, message) => {
     let enc = crypto.privateDecrypt({
     key: privateKey,
@@ -33,21 +34,23 @@ rsaWrapper.decrypt = (privateKey, message) => {
     return enc.toString();
 };
 
-// Loading RSA keys from files to variables:
+// Cargando las llaves RSA en variables
 rsaWrapper.initLoadServerKeys = (basePath) => {
     rsaWrapper.serverPub = fs.readFileSync(path.resolve(basePath, 'keys', 'server.public.pem'));
     rsaWrapper.serverPrivate = fs.readFileSync(path.resolve(basePath, 'keys', 'server.private.pem'));
     rsaWrapper.clientPub = fs.readFileSync(path.resolve(basePath, 'keys', 'client.public.pem'));
 };
 
-// Run RSA encryption test scenario. Message is encrypted, log on console in base64 format and message is decrypted and log on console.
+// -- Ejecutar el caso de prueba de encrypt RSA --
+// El mensaje es cifrado y mostrado en consola,
+// posteriormente es descifrado y mostrado en consola
 rsaWrapper.serverExampleEncrypt = () => {
     console.log('Server public encrypting');
-    let enc = rsaWrapper.encrypt(rsaWrapper.serverPub, 'Server init hello');
-    console.log('Server private encrypting…');
+    let enc = rsaWrapper.encrypt(rsaWrapper.serverPub, 'Testing keys at server init: Correct!');
+    console.log('Server private encrypting...');
     console.log('Encrypted RSA string ', '\n', enc);
     let dec = rsaWrapper.decrypt(rsaWrapper.serverPrivate, enc);
-    console.log('Decrypted RSA string…');
+    console.log('Decrypted RSA string...');
     console.log(dec);
 };
 

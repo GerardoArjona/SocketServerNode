@@ -1,5 +1,5 @@
 const rsaWrapper = require('./rsaWrapper');
-// generate opened and closed keys for browser and server
+// Generando las llaves privadas y publicas a ser usadas por el cliente y el servidor
 rsaWrapper.generate('server');
 rsaWrapper.generate('client');
-console.log('Keys generated…')
+console.log('Keys generate...')
