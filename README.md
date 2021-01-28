@@ -1,3 +1,8 @@
+# Simple Socket Server
+Simple Socket Server using socket.io and encrypts/decrypts messages with key files
+
+Works with: https://github.com/GerardoArjona/SocketClientNode
+
 ## Version & instalation
 
 Minimum requirements
@@ -15,7 +20,7 @@ Run
 
 	npm run keys
 
-to generate server & client public & private keys.
+to generate server/client public & private keys.
 
 Copy
 
